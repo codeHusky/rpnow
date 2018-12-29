@@ -52,6 +52,14 @@
         </a>
       </div>
     </template>
+
+    <template v-if="isAudio">
+      <div class="player">
+        <button @click="playAudio">
+          Play content from {{urlOrigin}}
+        </button>
+      </div>
+    </template>
   </div>
 </template>
   
@@ -206,6 +214,7 @@
       isOOC: function() { return this.type === 'ooc' },
       isChara: function() { return this.type === 'chara' },
       isImage: function() { return this.type === 'image' },
+      isAudio: function() { return this.type === 'audio' },
       charaColor: function() { return this.isChara ? this.chara.color : null },
       charaName: function() { return this.isChara ? this.chara.name : null },
       elementClasses: function() {
@@ -263,11 +272,17 @@
           'Edited ' + new Date(this.timestamp).toLocaleString() :
           'Posted ' + new Date(this.timestamp).toLocaleString();
       },
+      urlOrigin: function() {
+        if (!this.url) return this.url;
+        return this.url.split('/')[2];
+      }
     },
     methods: {
       beginEdit: function() {
         if (this.isImage) {
           this.$emit('prompt-image-edit')
+        } else if (this.isAudio) {
+          this.$emit('prompt-audio-edit')
         } else {
           this.editing = true;
           this.newContent = this.content;
@@ -288,6 +303,9 @@
       notifySizeChange: function() {
         this.$emit('resize');
       },
+      playAudio: function() {
+        this.$emit('play-audio');
+      }
     },
     created: function() {
       this.intervalHandle = setInterval((function() {
